@@ -1,11 +1,9 @@
 ---
 title: "Four ways to perform Granger Causality test with R"
 output: github_document
-author: Nicola Righetti
-website: https::www.nicolarighetti.net 
 ---
 
-Granger causality test is common practice in time series analysis, but the different ways it can be performed in R are poorly documented. I already published a function to perform the Toda-Yamamoto bivariate and multivariate versions of the Granger causality test (see at  [Toda-Yamamoto-Causality-Test](https://github.com/nicolarighetti/Toda-Yamamoto-Causality-Test/blob/main/README.md). In this brief document, I am going to focus on its standard version, suggesting five different approaches.
+Granger causality test is common practice in time series analysis, but the different ways it can be performed in R are poorly documented. I already published a function to perform the Toda-Yamamoto bivariate and multivariate versions of the Granger causality test (see at  [Toda-Yamamoto-Causality-Test](https://github.com/nicolarighetti/Toda-Yamamoto-Causality-Test/blob/main/README.md)). In this brief document, I am going to focus on its standard version, suggesting five different approaches.
 
 A time series X is said to Granger cause another time series Y if past values of X and Y predict Y significantly better than past values of Y alone (Granger, 1969, see  [here](https://github.com/nicolarighetti/Toda-Yamamoto-Causality-Test/blob/main/README.md)). We can test this hypothesis by using linear regression and a Wald test for linear restrictions. The Wald test compares the performance of a restricted model for Y, which excludes X, against an unrestricted model for Y, which includes X.
 
@@ -32,8 +30,11 @@ While *grangertest* is a quick way to perform a Granger causal test, it is also 
 
 A second, more "manual" and thus flexible way to perform the test, is based on performing a Wald Test on two linear regression models. Linear regression models including lags of the variables can be easily fitted with the function *dynlm* of the homonymous library [dynlm](https://cran.r-project.org/web/packages/dynlm/index.html). Next, a Wald test can be performed by using the function *waldtest* of the already mentioned library *lmtest*.
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 library(dynlm)
+```
+
+```{r}
 unrestricted_ts2 <- dynlm(ts2 ~ L(ts2, 1:3) + L(ts1, 1:3))
 restricted_ts2 <- dynlm(ts2 ~ L(ts2, 1:3))
 
