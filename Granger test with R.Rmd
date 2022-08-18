@@ -56,7 +56,6 @@ lmtest::waldtest(unrestricted_ts2, restricted_ts2, test="F", vcov = sandwich::Ne
 The third approach is a version of the latter. A Wald test can also be done using the *wald.test* function of the [aod](https://cran.r-project.org/web/packages/aod/index.html) package. It is trickier because you must manually specify the terms to be tested. However, this additional flexibility can prove useful in certain cases. By default, *wald.test* will calculate a Wald Chi-square test. The Chi-squared version of the test can be also computed with the *waldtest* function of *lmtest* by specifying the option test="Chisq". Similarly, the F or Chi-squared test can be performed by using the the function *linearHypothesis* in the [car](https://cran.r-project.org/web/packages/car/index.html) package.
 
 ```{r}
-library(aod)
 aod::wald.test(b=coef(unrestricted_ts2), 
                Sigma=vcov(unrestricted_ts2),
                Terms = 5:7,

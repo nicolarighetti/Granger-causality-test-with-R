@@ -1,12 +1,11 @@
 Four ways to perform Granger Causality test with R
 ================
-Nicola Righetti
 
 Granger causality test is common practice in time series analysis, but
 the different ways it can be performed in R are poorly documented. I
 already published a function to perform the Toda-Yamamoto bivariate and
 multivariate versions of the Granger causality test (see at
-[Toda-Yamamoto-Causality-Test](https://github.com/nicolarighetti/Toda-Yamamoto-Causality-Test/blob/main/README.md).
+[Toda-Yamamoto-Causality-Test](https://github.com/nicolarighetti/Toda-Yamamoto-Causality-Test/blob/main/README.md)).
 In this brief document, I am going to focus on its standard version,
 suggesting five different approaches.
 
@@ -63,15 +62,6 @@ already mentioned library *lmtest*.
 ``` r
 library(dynlm)
 ```
-
-    ## Loading required package: zoo
-
-    ## 
-    ## Attaching package: 'zoo'
-
-    ## The following objects are masked from 'package:base':
-    ## 
-    ##     as.Date, as.Date.numeric
 
 ``` r
 unrestricted_ts2 <- dynlm(ts2 ~ L(ts2, 1:3) + L(ts1, 1:3))
@@ -158,12 +148,6 @@ function of *lmtest* by specifying the option test=“Chisq”. Similarly,
 the F or Chi-squared test can be performed by using the the function
 *linearHypothesis* in the
 [car](https://cran.r-project.org/web/packages/car/index.html) package.
-
-``` r
-library(aod)
-```
-
-    ## Warning: package 'aod' was built under R version 4.1.2
 
 ``` r
 aod::wald.test(b=coef(unrestricted_ts2), 
