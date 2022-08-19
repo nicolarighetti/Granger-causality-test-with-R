@@ -1,36 +1,38 @@
 Four ways to perform Granger Causality test with R
 ================
 
-Granger causality test is common practice in time series analysis, but
-the different ways it can be performed in R are poorly documented. I
-already published a function to perform the Toda-Yamamoto bivariate and
+The Granger causal test is widely used in time series analysis, but the
+various ways in which it may be performed in R are poorly documented. I
+published before a function to perform the Toda-Yamamoto bivariate and
 multivariate versions of the Granger causality test (see at
 [Toda-Yamamoto-Causality-Test](https://github.com/nicolarighetti/Toda-Yamamoto-Causality-Test/blob/main/README.md)).
-In this brief document, I am going to focus on its standard version,
-suggesting five different approaches.
+In the few lines that follow, I am going to focus on its standard
+version, suggesting four different approaches.
 
-A time series X is said to Granger cause another time series Y if past
-values of X and Y predict Y significantly better than past values of Y
-alone (Granger, 1969, see
-[here](https://github.com/nicolarighetti/Toda-Yamamoto-Causality-Test/blob/main/README.md)).
-We can test this hypothesis by using linear regression and a Wald test
-for linear restrictions. The Wald test compares the performance of a
-restricted model for Y, which excludes X, against an unrestricted model
-for Y, which includes X.
+For starters, a definition. A time series X is said to Granger cause
+another time series Y if past values of X and Y predict Y significantly
+better than past values of Y only. (Granger, 1969, click
+[here](https://github.com/nicolarighetti/Toda-Yamamoto-Causality-Test/blob/main/README.md)
+for other details). We can test that hypothesis using linear regression
+modeling and a Wald test for linear restrictions. The Wald test compares
+the performance of a restricted model for Y, which excludes X, to a
+non-restricted model for Y, which includes X.
 
-First off, let’s create two time series. It’s important to notice that
-the data are represented as time series using the base R *ts* function.
-Some functions documented here do not function properly if the data are
-not in this format.
+Firstly, let’s create two simulated time series. It is important to note
+that the data are represented as time series using the base R *ts*
+function. Some functions described here do not work well if the data is
+not in this format. Also note that the Granger causality test has
+several assumptions. I’m not going to go into that. I just add that it’s
+based on linear modeling, so the linear regression assumptions apply to
+it.
 
 ## First approach: lmtest::grangertest
 
 The first way to perform a Granger causality test in R is to use the
 *grangertest* function provided by the
 [lmtest](https://cran.r-project.org/web/packages/lmtest/index.html)
-package. To test if the series *ts1* Granger-causes the series *t2* we
-can run a simple line of code, as follows. It turns out the *ts1*
-Granger-causes *ts2*.
+package. We can test if the series *ts1* Granger-causes the series *t2*
+with a simple line of code. It turns out the *ts1* Granger-causes *ts2*.
 
 ``` r
 lmtest::grangertest(ts1, ts2, order=3, test="F")
@@ -47,17 +49,20 @@ lmtest::grangertest(ts1, ts2, order=3, test="F")
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
 While *grangertest* is a quick way to perform a Granger causal test, it
-is also quite rough, as it does not rely on any modelling of the series.
+is quite rough, as it does not rely on any modelling of the series. It
+is important to fit an appropriate linear model to the series, also just
+to check if the assumptions hold.
 
 ## Second approach: dynlm::dynlm + lmtest::waldtest
 
-A second, more “manual” and thus flexible way to perform the test, is
-based on performing a Wald Test on two linear regression models. Linear
-regression models including lags of the variables can be easily fitted
-with the function *dynlm* of the homonymous library
-[dynlm](https://cran.r-project.org/web/packages/dynlm/index.html). Next,
-a Wald test can be performed by using the function *waldtest* of the
-already mentioned library *lmtest*.
+A second, more flexible approach is based on performing a Wald test on
+two fitted linear regression models. As defined in the Granger causality
+test, linear regression models include past lags of the variables. This
+type of model can be easily fitted with the function
+[dynlm](https://cran.r-project.org/web/packages/dynlm/index.html) of the
+homonymous R package. Next, if the assumptions of the linear models and
+Granger test hold, a Wald test can be performed by using the function
+*waldtest* of the already mentioned library *lmtest*.
 
 ``` r
 library(dynlm)
@@ -80,16 +85,14 @@ lmtest::waldtest(unrestricted_ts2, restricted_ts2, test="F")
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
-The results are the same as above, in this case, but this approach has
-the advantage that the series can be modeled flexibly prior to testing
-Granger’s causality. For instance, by adding a seasonality term or other
-variables when necessary.
+This approach has the advantage that the series can be modeled in a
+flexible manner before testing Granger’s causality. For instance, by
+adding a seasonal term or other variables when necessary.
 
-Morevoer, this approach permits to specify the
-heteroscedasticity-consistent estimation (HC) or the heteroscedasticity
-and autocorrelation consistent estimation (HAC) of the covariance matrix
-of the coefficient estimates, also in the Newey West form, for instance
-by using the functions provided by the
+Moreover, this approach permits the specification of
+heteroscedasticity-consistent (HC) or heteroscedasticity and
+autocorrelation consistent standard errors (HAC), also in the Newey West
+form, for instance by using the functions provided by the
 [sandwich](https://cran.r-project.org/web/packages/sandwich/index.html)
 package.
 
@@ -138,10 +141,10 @@ lmtest::waldtest(unrestricted_ts2, restricted_ts2, test="F", vcov = sandwich::Ne
 ## Third approach: dynlm::dynlm + aod::wald.test
 
 The third approach is a version of the latter. A Wald test can also be
-done using the *wald.test* function of the
+performed with the wald.test function in the
 [aod](https://cran.r-project.org/web/packages/aod/index.html) package.
-It is trickier because you must manually specify the terms to be tested.
-However, this additional flexibility can prove useful in certain cases.
+This is trickier because you have to manually specify the terms to be
+tested. However, this extra flexibility may be useful in certain cases.
 By default, *wald.test* will calculate a Wald Chi-square test. The
 Chi-squared version of the test can be also computed with the *waldtest*
 function of *lmtest* by specifying the option test=“Chisq”. Similarly,
@@ -206,7 +209,7 @@ The fourth way to perform a Granger causality test in R is probably the
 most commonly used, and consists in using the package
 [vars](https://cran.r-project.org/web/packages/vars/index.html) to fit a
 VAR model (which is basically a system of linear regression models) and
-subsequently run the Granger test using the function *causality*
+subsequently, run the Granger test using the function *causality*
 provided by the same package.
 
 ``` r
@@ -221,8 +224,9 @@ vars::causality(tsVAR, cause = "ts1")$Granger
     ## data:  VAR object tsVAR
     ## F-Test = 2.7758, df1 = 3, df2 = 180, p-value = 0.04276
 
-The *causality* function has several interesting options. For example,
-it implements a bootstrapping procedure. It is also possible to specify
-the heteroscedasticity-consistent estimation of the covariance matrix of
-the coefficient estimates in the regression models (HC), but other types
-of estimation of the covariance matrix (e.g., HAC) are not supported.
+The *causation* function offers several interesting options. For
+example, it implements a bootstrapping procedure. It is also possible to
+specify the heteroscedasticity-consistent estimation of the covariance
+matrix of the coefficient estimates in the regression models (HC), but
+other types of estimation of the covariance matrix (e.g., HAC) are not
+supported.
