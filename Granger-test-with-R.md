@@ -32,7 +32,8 @@ The first way to perform a Granger causality test in R is to use the
 *grangertest* function provided by the
 [lmtest](https://cran.r-project.org/web/packages/lmtest/index.html)
 package. We can test if the series *ts1* Granger-causes the series *t2*
-with a simple line of code. It turns out the *ts1* Granger-causes *ts2*.
+with a simple line of code. It turns out the *ts1* does not
+Granger-causes *ts2*.
 
 ``` r
 lmtest::grangertest(ts1, ts2, order=3, test="F")
@@ -42,11 +43,9 @@ lmtest::grangertest(ts1, ts2, order=3, test="F")
     ## 
     ## Model 1: ts2 ~ Lags(ts2, 1:3) + Lags(ts1, 1:3)
     ## Model 2: ts2 ~ Lags(ts2, 1:3)
-    ##   Res.Df Df      F  Pr(>F)  
-    ## 1     90                    
-    ## 2     93 -3 2.7758 0.04585 *
-    ## ---
-    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ##   Res.Df Df      F Pr(>F)
+    ## 1   4990                 
+    ## 2   4993 -3 1.6216 0.1821
 
 While *grangertest* is a quick way to perform a Granger causal test, it
 is quite rough, as it does not rely on any modelling of the series. It
@@ -79,11 +78,9 @@ lmtest::waldtest(unrestricted_ts2, restricted_ts2, test="F")
     ## 
     ## Model 1: ts2 ~ L(ts2, 1:3) + L(ts1, 1:3)
     ## Model 2: ts2 ~ L(ts2, 1:3)
-    ##   Res.Df Df      F  Pr(>F)  
-    ## 1     90                    
-    ## 2     93 -3 2.7758 0.04585 *
-    ## ---
-    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ##   Res.Df Df      F Pr(>F)
+    ## 1   4990                 
+    ## 2   4993 -3 1.6216 0.1821
 
 This approach has the advantage that the series can be modeled in a
 flexible manner before testing Granger’s causality. For instance, by
@@ -104,11 +101,9 @@ lmtest::waldtest(unrestricted_ts2, restricted_ts2, test="F", vcov = sandwich::vc
     ## 
     ## Model 1: ts2 ~ L(ts2, 1:3) + L(ts1, 1:3)
     ## Model 2: ts2 ~ L(ts2, 1:3)
-    ##   Res.Df Df      F  Pr(>F)  
-    ## 1     90                    
-    ## 2     93 -3 2.7386 0.04801 *
-    ## ---
-    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ##   Res.Df Df      F Pr(>F)
+    ## 1   4990                 
+    ## 2   4993 -3 1.6298 0.1802
 
 ``` r
 lmtest::waldtest(unrestricted_ts2, restricted_ts2, test="F", vcov = sandwich::vcovHAC) 
@@ -118,11 +113,9 @@ lmtest::waldtest(unrestricted_ts2, restricted_ts2, test="F", vcov = sandwich::vc
     ## 
     ## Model 1: ts2 ~ L(ts2, 1:3) + L(ts1, 1:3)
     ## Model 2: ts2 ~ L(ts2, 1:3)
-    ##   Res.Df Df      F  Pr(>F)  
-    ## 1     90                    
-    ## 2     93 -3 3.3839 0.02157 *
-    ## ---
-    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ##   Res.Df Df      F Pr(>F)
+    ## 1   4990                 
+    ## 2   4993 -3 1.6577 0.1739
 
 ``` r
 lmtest::waldtest(unrestricted_ts2, restricted_ts2, test="F", vcov = sandwich::NeweyWest) 
@@ -132,11 +125,9 @@ lmtest::waldtest(unrestricted_ts2, restricted_ts2, test="F", vcov = sandwich::Ne
     ## 
     ## Model 1: ts2 ~ L(ts2, 1:3) + L(ts1, 1:3)
     ## Model 2: ts2 ~ L(ts2, 1:3)
-    ##   Res.Df Df      F  Pr(>F)  
-    ## 1     90                    
-    ## 2     93 -3 3.9935 0.01017 *
-    ## ---
-    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ##   Res.Df Df      F Pr(>F)
+    ## 1   4990                 
+    ## 2   4993 -3 1.6737 0.1704
 
 ## Third approach: dynlm::dynlm + aod::wald.test
 
@@ -164,27 +155,27 @@ aod::wald.test(b=coef(unrestricted_ts2),
     ## 
     ## Coefficients:
     ##  (Intercept) L(ts2, 1:3)1 L(ts2, 1:3)2 L(ts2, 1:3)3 L(ts1, 1:3)1 L(ts1, 1:3)2 
-    ##        0.094        0.114       -0.038       -0.132        0.091       -0.139 
+    ##       0.0191      -0.0037       0.0120      -0.0063       0.0085       0.0294 
     ## L(ts1, 1:3)3 
-    ##        0.279 
+    ##       0.0043 
     ## 
     ## Var-cov matrix of the coefficients:
     ##              (Intercept) L(ts2, 1:3)1 L(ts2, 1:3)2 L(ts2, 1:3)3 L(ts1, 1:3)1
-    ## (Intercept)   0.01196    -0.00076     -0.00061     -0.00073      0.00169    
-    ## L(ts2, 1:3)1 -0.00076     0.01070     -0.00111      0.00045     -0.00031    
-    ## L(ts2, 1:3)2 -0.00061    -0.00111      0.01079     -0.00103      0.00097    
-    ## L(ts2, 1:3)3 -0.00073     0.00045     -0.00103      0.01065     -0.00036    
-    ## L(ts1, 1:3)1  0.00169    -0.00031      0.00097     -0.00036      0.01146    
-    ## L(ts1, 1:3)2  0.00170    -0.00119     -0.00022      0.00076     -0.00133    
-    ## L(ts1, 1:3)3  0.00215     0.00084     -0.00129     -0.00030     -0.00023    
+    ## (Intercept)   1.9e-04    -3.8e-06     -3.8e-06     -3.7e-06      1.3e-06    
+    ## L(ts2, 1:3)1 -3.8e-06     2.0e-04      6.4e-07     -2.4e-06     -6.8e-06    
+    ## L(ts2, 1:3)2 -3.8e-06     6.4e-07      2.0e-04      6.0e-07      2.5e-06    
+    ## L(ts2, 1:3)3 -3.7e-06    -2.4e-06      6.0e-07      2.0e-04     -1.5e-08    
+    ## L(ts1, 1:3)1  1.3e-06    -6.8e-06      2.5e-06     -1.5e-08      2.0e-04    
+    ## L(ts1, 1:3)2  1.3e-06    -1.7e-06     -6.8e-06      2.5e-06     -1.5e-06    
+    ## L(ts1, 1:3)3  1.5e-06    -5.9e-06     -1.7e-06     -6.8e-06     -1.4e-06    
     ##              L(ts1, 1:3)2 L(ts1, 1:3)3
-    ## (Intercept)   0.00170      0.00215    
-    ## L(ts2, 1:3)1 -0.00119      0.00084    
-    ## L(ts2, 1:3)2 -0.00022     -0.00129    
-    ## L(ts2, 1:3)3  0.00076     -0.00030    
-    ## L(ts1, 1:3)1 -0.00133     -0.00023    
-    ## L(ts1, 1:3)2  0.01180     -0.00120    
-    ## L(ts1, 1:3)3 -0.00120      0.01169    
+    ## (Intercept)   1.3e-06      1.5e-06    
+    ## L(ts2, 1:3)1 -1.7e-06     -5.9e-06    
+    ## L(ts2, 1:3)2 -6.8e-06     -1.7e-06    
+    ## L(ts2, 1:3)3  2.5e-06     -6.8e-06    
+    ## L(ts1, 1:3)1 -1.5e-06     -1.4e-06    
+    ## L(ts1, 1:3)2  2.0e-04     -1.5e-06    
+    ## L(ts1, 1:3)3 -1.5e-06      2.0e-04    
     ## 
     ## Test-design matrix:
     ##    (Intercept) L(ts2, 1:3)1 L(ts2, 1:3)2 L(ts2, 1:3)3 L(ts1, 1:3)1 L(ts1, 1:3)2
@@ -201,7 +192,7 @@ aod::wald.test(b=coef(unrestricted_ts2),
     ## H0:  L(ts1, 1:3)1 = 0; L(ts1, 1:3)2 = 0; L(ts1, 1:3)3 = 0 
     ## 
     ## Chi-squared test:
-    ## X2 = 8.3, df = 3, P(> X2) = 0.04
+    ## X2 = 4.9, df = 3, P(> X2) = 0.18
 
 ## Fourth approach: vars::VAR + vars::causality
 
@@ -222,7 +213,7 @@ vars::causality(tsVAR, cause = "ts1")$Granger
     ##  Granger causality H0: ts1 do not Granger-cause ts2
     ## 
     ## data:  VAR object tsVAR
-    ## F-Test = 2.7758, df1 = 3, df2 = 180, p-value = 0.04276
+    ## F-Test = 1.6216, df1 = 3, df2 = 9980, p-value = 0.182
 
 The *causation* function offers several interesting options. For
 example, it implements a bootstrapping procedure. It is also possible to
