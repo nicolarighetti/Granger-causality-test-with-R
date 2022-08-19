@@ -1,4 +1,4 @@
-Four ways to perform Granger Causality test with R
+Four ways to perform a Granger Causality test with R
 ================
 
 The Granger causal test is widely used in time series analysis, but the

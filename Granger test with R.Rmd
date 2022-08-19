@@ -1,5 +1,5 @@
 ---
-title: "Four ways to perform Granger Causality test with R"
+title: "Four ways to perform a Granger Causality test with R"
 output: github_document
 ---
 
