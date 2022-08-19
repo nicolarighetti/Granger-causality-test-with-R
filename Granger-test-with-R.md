@@ -40,7 +40,7 @@ The first way to perform a Granger causality test in R is to use the
 [lmtest](https://cran.r-project.org/web/packages/lmtest/index.html)
 package. We can test if the series *ts1* Granger-causes the series *t2*
 with a simple line of code. It turns out the *ts1* does not
-Granger-causes *ts2*.
+Granger-cause *ts2*.
 
 ``` r
 lmtest::grangertest(ts1, ts2, order=3, test="F")
