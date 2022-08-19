@@ -9,7 +9,7 @@ For starters, a definition. A time series X is said to Granger cause another tim
 
 Firstly, let's create two simulated time series. It is important to note that the data are represented as time series using the base R *ts* function. Some functions described here do not work well if the data is not in this format. Also note that the Granger causality test has several assumptions. I'm not going to go into that. I just add that it's based on linear modeling, so the linear regression assumptions apply to it.
 
-```{r setup, include=FALSE}
+```{r}
 set.seed(1234)
 
 ts1 <- ts(rnorm(n=5000))

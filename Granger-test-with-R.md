@@ -26,6 +26,13 @@ several assumptions. I’m not going to go into that. I just add that it’s
 based on linear modeling, so the linear regression assumptions apply to
 it.
 
+``` r
+set.seed(1234)
+
+ts1 <- ts(rnorm(n=5000))
+ts2 <- ts(rnorm(n=5000))
+```
+
 ## First approach: lmtest::grangertest
 
 The first way to perform a Granger causality test in R is to use the
