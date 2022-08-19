@@ -23,8 +23,8 @@ that the data are represented as time series using the base R *ts*
 function. Some functions described here do not work well if the data is
 not in this format. Also note that the Granger causality test has
 several assumptions. I’m not going to go into that. I just add that it’s
-based on linear modeling, so the linear regression assumptions apply to
-it.
+based on linear modeling, so besides specific assumptions of the test,
+the usual linear regression assumptions apply to it.
 
 ``` r
 set.seed(1234)
